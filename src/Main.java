@@ -34,13 +34,14 @@ public class Main extends JPanel {
                     if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                             && board.cells[row][col].content == Seed.NO_SEED) {
                         if (currentMode == GameMode.PLAYER_VS_PLAYER || currentPlayer == playerSeed) {
-                            currentState = board.stepGame(currentPlayer, row, col);
+                            currentState = board.stepGame(currentPlayer, col); // Pass only the column
                             currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
 
                             if (currentMode == GameMode.PLAYER_VS_AI && currentState == State.PLAYING) {
                                 aiMove();
                                 currentPlayer = playerSeed;
                             }
+
                             if (currentState == State.PLAYING) {
                                 SoundEffect.EAT_FOOD.play();
                             } else {
@@ -141,8 +142,9 @@ public class Main extends JPanel {
 
     private void aiMove() {
         if (aiPlayer != null) {
-            int[] move = aiPlayer.move();
-            currentState = board.stepGame(aiSeed, move[0], move[1]);
+            int[] move = aiPlayer.move(); // move[1] should be the column index
+            int selectedCol = move[1];    // Use only the column
+            currentState = board.stepGame(aiSeed, selectedCol);
         }
     }
 
