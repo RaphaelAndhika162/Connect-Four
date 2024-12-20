@@ -30,11 +30,23 @@ public class Main extends JPanel {
             repaint();         // Repaint the board after undo
         });
 
-        // Add the undo button to the bottom panel
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.add(undoButton);
+        // Setup the status bar
+        statusBar = new JLabel();
+        statusBar.setFont(FONT_STATUS);
+        statusBar.setBackground(COLOR_BG_STATUS);
+        statusBar.setOpaque(true);
+        statusBar.setHorizontalAlignment(JLabel.LEFT);
+        statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
+
+        // Combine undoButton and statusBar into a single panel
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(undoButton, BorderLayout.WEST); // Place Undo button on the left
+        bottomPanel.add(statusBar, BorderLayout.CENTER); // Place StatusBar in the center
+
+        // Add bottomPanel to the PAGE_END
         super.add(bottomPanel, BorderLayout.PAGE_END);
 
+        // Add MouseListener for board interactions
         super.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -62,16 +74,7 @@ public class Main extends JPanel {
             }
         });
 
-        statusBar = new JLabel();
-        statusBar.setFont(FONT_STATUS);
-        statusBar.setBackground(COLOR_BG_STATUS);
-        statusBar.setOpaque(true);
-        statusBar.setPreferredSize(new Dimension(300, 30));
-        statusBar.setHorizontalAlignment(JLabel.LEFT);
-        statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
-
-        super.setLayout(new BorderLayout());
-        super.add(statusBar, BorderLayout.PAGE_END);
+        // Setup the game area
         super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30));
         super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
 
@@ -79,6 +82,7 @@ public class Main extends JPanel {
         newGame();
         super.setFocusable(true);  // Make sure the panel can listen to key events
     }
+
 
     public void initGame() {
         board = new Board();
