@@ -18,10 +18,8 @@ public class Main extends JPanel {
     private State currentState;
     private Seed currentPlayer;
     private JLabel statusBar;
-    private GameMode currentMode = GameMode.PLAYER_VS_PLAYER;
+    private GameMode currentMode = GameMode.PLAYER_VS_PLAYER;  // Only Player vs Player mode is available now
     private Seed playerSeed;
-    private Seed aiSeed;
-    private AIPlayer aiPlayer;
 
     public Main() {
         super.setLayout(new BorderLayout());
@@ -51,11 +49,6 @@ public class Main extends JPanel {
                             && board.cells[row][col].content == Seed.NO_SEED) {
                         currentState = board.stepGame(currentPlayer, col); // Pass only the column
                         currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-
-                        if (currentMode == GameMode.PLAYER_VS_AI && currentState == State.PLAYING) {
-                            aiMove();
-                            currentPlayer = playerSeed;
-                        }
 
                         if (currentState == State.PLAYING) {
                             SoundEffect.EAT_FOOD.play();
@@ -93,7 +86,7 @@ public class Main extends JPanel {
     }
 
     public void newGame() {
-        chooseGameMode();
+        chooseGameMode();  // Only Player vs Player mode will be available
         for (int row = 0; row < Board.ROWS; ++row) {
             for (int col = 0; col < Board.COLS; ++col) {
                 board.cells[row][col].content = Seed.NO_SEED;
@@ -101,12 +94,7 @@ public class Main extends JPanel {
         }
         currentPlayer = Seed.CROSS;
         playerSeed = Seed.CROSS;
-        aiSeed = Seed.NOUGHT;
         currentState = State.PLAYING;
-
-        if (currentMode == GameMode.PLAYER_VS_AI) {
-            aiPlayer.setSeed(aiSeed);
-        }
     }
 
     @Override
@@ -132,7 +120,7 @@ public class Main extends JPanel {
     }
 
     public void chooseGameMode() {
-        String[] options = {"Player vs Player", "Player vs AI (Minimax)", "Player vs AI (Table Lookup)"};
+        String[] options = {"Player vs Player"};
         int choice = JOptionPane.showOptionDialog(
                 this,
                 "Choose Game Mode:",
@@ -144,22 +132,9 @@ public class Main extends JPanel {
                 options[0]
         );
 
-        if (choice == 1) {
-            currentMode = GameMode.PLAYER_VS_AI;
-            aiPlayer = new AIPlayerMinimax(board);
-        } else if (choice == 2) {
-            currentMode = GameMode.PLAYER_VS_AI;
-            aiPlayer = new AIPlayerTableLookup(board);
-        } else {
+        // Only Player vs Player mode will be available
+        if (choice == 0) {
             currentMode = GameMode.PLAYER_VS_PLAYER;
-        }
-    }
-
-    private void aiMove() {
-        if (aiPlayer != null) {
-            int[] move = aiPlayer.move(); // move[1] should be the column index
-            int selectedCol = move[1];    // Use only the column
-            currentState = board.stepGame(aiSeed, selectedCol);
         }
     }
 
