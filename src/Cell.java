@@ -1,39 +1,58 @@
 import java.awt.*;
+
 /**
  * The Cell class models each individual cell of the game board.
  */
 public class Cell {
     // Define named constants for drawing
     public static final int SIZE = 120; // cell width/height (square)
-    // Symbols (cross/nought) are displayed inside a cell, with padding from border
-    public static final int PADDING = SIZE / 5;
-    public static final int SEED_SIZE = SIZE - PADDING * 2;
+    public static final int PADDING = SIZE / 5; // Padding for the disc inside the cell
+    public static final int SEED_SIZE = SIZE - PADDING * 2; // Size of the disc
 
     // Define properties (package-visible)
-    /** Content of this cell (Seed.EMPTY, Seed.CROSS, or Seed.NOUGHT) */
+    /**
+     * Content of this cell (Seed.EMPTY, Seed.CROSS, or Seed.NOUGHT)
+     */
     Seed content;
-    /** Row and column of this cell */
+    /**
+     * Row and column of this cell
+     */
     int row, col;
 
-    /** Constructor to initialize this cell with the specified row and col */
+    /**
+     * Constructor to initialize this cell with the specified row and col
+     */
     public Cell(int row, int col) {
         this.row = row;
         this.col = col;
-        content = Seed.NO_SEED;
+        content = Seed.NO_SEED; // Default content
     }
 
-    /** Reset this cell's content to EMPTY, ready for new game */
+    /**
+     * Reset this cell's content to EMPTY, ready for a new game
+     */
     public void newGame() {
         content = Seed.NO_SEED;
     }
 
-    /** Paint itself on the graphics canvas, given the Graphics context */
+    /**
+     * Paint itself on the graphics canvas, given the Graphics context
+     */
     public void paint(Graphics g) {
-        // Draw the Seed if it is not empty
-        int x1 = col * SIZE + PADDING;
-        int y1 = row * SIZE + PADDING;
-        if (content == Seed.CROSS || content == Seed.NOUGHT) {
-            g.drawImage(content.getImage(), x1, y1, SEED_SIZE, SEED_SIZE, null);
+        // Calculate the top-left corner of the cell
+        int x = col * SIZE;
+        int y = row * SIZE;
+
+        // Set the color based on the content
+        if (content == Seed.CROSS) { // Red disc for CROSS
+            g.setColor(Color.RED);
+        } else if (content == Seed.NOUGHT) { // Yellow disc for NOUGHT
+            g.setColor(Color.YELLOW);
+        } else {
+            g.setColor(Color.WHITE); // Empty cell
         }
+
+        // Draw the disc inside the cell with padding
+        g.fillOval(x + PADDING, y + PADDING, SEED_SIZE, SEED_SIZE);
     }
 }
