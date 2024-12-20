@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Stack;
 
 public class Board {
     // Define constants for Connect-Four grid dimensions
@@ -16,6 +17,9 @@ public class Board {
     // 2D array of cells representing the board
     Cell[][] cells;
 
+    // Stack to store moves for undo functionality
+    private Stack<Move> moveHistory;
+
     /** Constructor to initialize the board */
     public Board() {
         initGame();
@@ -23,6 +27,7 @@ public class Board {
 
     /** Initialize the game board */
     public void initGame() {
+        moveHistory = new Stack<>();
         cells = new Cell[ROWS][COLS];
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
@@ -33,10 +38,24 @@ public class Board {
 
     /** Reset the board for a new game */
     public void newGame() {
+        moveHistory.clear();
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
                 cells[row][col].newGame();
             }
+        }
+    }
+
+    // Store a move
+    public void recordMove(Seed player, int row, int col) {
+        moveHistory.push(new Move(player, row, col));
+    }
+
+    // Undo the last move
+    public void undoMove() {
+        if (!moveHistory.isEmpty()) {
+            Move lastMove = moveHistory.pop();
+            cells[lastMove.row][lastMove.col].content = Seed.NO_SEED;
         }
     }
 
@@ -51,6 +70,9 @@ public class Board {
         for (int row = ROWS - 1; row >= 0; --row) {
             if (cells[row][selectedCol].content == Seed.NO_SEED) {
                 cells[row][selectedCol].content = player;
+
+                // Record the move for undo
+                recordMove(player, row, selectedCol);
 
                 // Check for a win after the move
                 if (hasWon(player, row, selectedCol)) {
@@ -90,6 +112,7 @@ public class Board {
      * @param deltaCol The column increment (e.g., 1 for right, -1 for left).
      * @return True if the player has 4 in a row in the given direction.
      */
+
     private boolean checkDirection(Seed player, int row, int col, int deltaRow, int deltaCol) {
         int count = 0;
 
@@ -116,6 +139,17 @@ public class Board {
         }
 
         return count >= 4; // Win condition
+    }
+
+    private class Move {
+        Seed player;
+        int row, col;
+
+        Move(Seed player, int row, int col) {
+            this.player = player;
+            this.row = row;
+            this.col = col;
+        }
     }
 
     /** Paint the board */

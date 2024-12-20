@@ -4,8 +4,10 @@ import javax.swing.*;
 
 public class Main extends JPanel {
     private static final long serialVersionUID = 1L;
+    private JButton undoButton;
 
-    public static final String TITLE = "Tic Tac Toe";
+    // Define colors, fonts, etc.
+    public static final String TITLE = "Connect-Four";
     public static final Color COLOR_BG = Color.WHITE;
     public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
     public static final Color COLOR_CROSS = new Color(239, 105, 80);
@@ -22,6 +24,20 @@ public class Main extends JPanel {
     private AIPlayer aiPlayer;
 
     public Main() {
+        super.setLayout(new BorderLayout());
+
+        // Create the Undo button
+        undoButton = new JButton("Undo");
+        undoButton.addActionListener(e -> {
+            board.undoMove();  // Undo the last move
+            repaint();         // Repaint the board after undo
+        });
+
+        // Add the undo button to the bottom panel
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(undoButton);
+        super.add(bottomPanel, BorderLayout.PAGE_END);
+
         super.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -33,20 +49,18 @@ public class Main extends JPanel {
                 if (currentState == State.PLAYING) {
                     if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                             && board.cells[row][col].content == Seed.NO_SEED) {
-                        if (currentMode == GameMode.PLAYER_VS_PLAYER || currentPlayer == playerSeed) {
-                            currentState = board.stepGame(currentPlayer, col); // Pass only the column
-                            currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                        currentState = board.stepGame(currentPlayer, col); // Pass only the column
+                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
 
-                            if (currentMode == GameMode.PLAYER_VS_AI && currentState == State.PLAYING) {
-                                aiMove();
-                                currentPlayer = playerSeed;
-                            }
+                        if (currentMode == GameMode.PLAYER_VS_AI && currentState == State.PLAYING) {
+                            aiMove();
+                            currentPlayer = playerSeed;
+                        }
 
-                            if (currentState == State.PLAYING) {
-                                SoundEffect.EAT_FOOD.play();
-                            } else {
-                                SoundEffect.DIE.play();
-                            }
+                        if (currentState == State.PLAYING) {
+                            SoundEffect.EAT_FOOD.play();
+                        } else {
+                            SoundEffect.DIE.play();
                         }
                     }
                 } else {
@@ -71,6 +85,7 @@ public class Main extends JPanel {
 
         initGame();
         newGame();
+        super.setFocusable(true);  // Make sure the panel can listen to key events
     }
 
     public void initGame() {
@@ -119,14 +134,14 @@ public class Main extends JPanel {
     public void chooseGameMode() {
         String[] options = {"Player vs Player", "Player vs AI (Minimax)", "Player vs AI (Table Lookup)"};
         int choice = JOptionPane.showOptionDialog(
-            this,
-            "Choose Game Mode:",
-            "Game Mode",
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.INFORMATION_MESSAGE,
-            null,
-            options,
-            options[0]
+                this,
+                "Choose Game Mode:",
+                "Game Mode",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                options,
+                options[0]
         );
 
         if (choice == 1) {
