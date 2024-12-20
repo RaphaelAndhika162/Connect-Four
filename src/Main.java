@@ -18,7 +18,6 @@ public class Main extends JPanel {
     private State currentState;
     private Seed currentPlayer;
     private JLabel statusBar;
-    private GameMode currentMode = GameMode.PLAYER_VS_PLAYER;  // Only Player vs Player mode is available now
     private Seed playerSeed;
 
     public Main() {
@@ -86,7 +85,6 @@ public class Main extends JPanel {
     }
 
     public void newGame() {
-        chooseGameMode();  // Only Player vs Player mode will be available
         for (int row = 0; row < Board.ROWS; ++row) {
             for (int col = 0; col < Board.COLS; ++col) {
                 board.cells[row][col].content = Seed.NO_SEED;
@@ -116,25 +114,6 @@ public class Main extends JPanel {
         } else if (currentState == State.NOUGHT_WON) {
             statusBar.setForeground(Color.RED);
             statusBar.setText("'O' Won! Click to play again.");
-        }
-    }
-
-    public void chooseGameMode() {
-        String[] options = {"Player vs Player"};
-        int choice = JOptionPane.showOptionDialog(
-                this,
-                "Choose Game Mode:",
-                "Game Mode",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
-
-        // Only Player vs Player mode will be available
-        if (choice == 0) {
-            currentMode = GameMode.PLAYER_VS_PLAYER;
         }
     }
 
